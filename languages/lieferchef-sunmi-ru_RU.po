@@ -1,0 +1,51 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Plugin Template 0.1.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/wordpress-plugin-template\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2024-03-11T15:52:17+03:00\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Language: \n"
+"X-Generator: WP-CLI 2.9.0\n"
+"X-Domain: wordpress-plugin-template\n"
+
+#. Plugin Name of the plugin
+msgid "Plugin Template"
+msgstr ""
+
+#. Description of the plugin
+msgid "Plugin description"
+msgstr ""
+
+#: src/Elementor/Widgets/Example.php:92
+msgid "Content"
+msgstr ""
+
+#: src/WordPressCore/AdminPages/Settings.php:52
+msgid "Field name"
+msgstr ""
+
+#: src/WordPressCore/AdminPages/Settings.php:57
+msgid "Field name title"
+msgstr ""
+
+#: src/WordPressCore/AdminPages/Settings.php:75
+#: src/WordPressCore/AdminPages/Settings.php:76
+msgid "WordPress plugin template settings page"
+msgstr ""
+
+#: assets/dist/js/admin.min.js:1
+msgid "admin js"
+msgstr ""
+
+#: assets/dist/js/frontend.min.js:1
+msgid "frontend js"
+msgstr ""
+
+#: assets/dist/js/meta_box_example.min.js:1
+msgid "example meta_box js"
+msgstr ""

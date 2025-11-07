@@ -1,0 +1,37 @@
+{
+    "autoload": {
+        "psr-4": {
+            "Onepix\\PluginTemplate\\": "src/"
+        }
+    },
+    "require-dev": {
+        "squizlabs/php_codesniffer": "^3.8.1",
+        "wp-coding-standards/wpcs": "^3.0",
+        "dealerdirect/phpcodesniffer-composer-installer": "^1.0.0",
+        "wp-cli/wp-cli-bundle": "^2.9",
+        "phpunit/phpunit": "^9.6",
+        "yoast/phpunit-polyfills": "^1.0"
+    },
+    "config": {
+        "allow-plugins": {
+            "dealerdirect/phpcodesniffer-composer-installer": true
+        }
+    },
+    "scripts": {
+        "phpcs": "bash ./bin/phpcs.sh",
+        "phpcs:full": "bash ./bin/phpcs.sh -full",
+        "phpcs:fix": "bash ./bin/phpcs.sh -fix",
+        "zip": "bash ./bin/zip.sh",
+        "make-pot": "./vendor/bin/wp i18n make-pot . --include=templates/*,src/*,assets/dist/js/*,index.php --exclude=.git,tests,assets/src/js",
+        "update-po": "./vendor/bin/wp i18n update-po languages/lieferchef-sunmi.pot",
+        "make-mo": "./vendor/bin/wp i18n make-mo ./languages",
+        "make-mo-json": "./vendor/bin/wp i18n make-json ./languages --no-purge --pretty-print",
+        "rename_template": "bash ./bin/rename_template.sh"
+    },
+    "require": {
+        "php": ">=7.4",
+        "firebase/php-jwt": "^6.10",
+        "kreait/firebase-php": "^7.18.0",
+        "endroid/qr-code": "^4.8"
+    }
+}
