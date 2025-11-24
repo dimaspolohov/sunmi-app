@@ -267,15 +267,14 @@ class Main {
 
         $options = get_option( 'lieferchef_global_settings' );
 
-        $address = $options['lieferchef_address'] . ', ' . $options['lieferchef_zip'] . ', ' . $options['lieferchef_city'];
-        $map_url = "https://www.google.com/maps?f=d&saddr=&daddr=".str_replace(" ", "+", $address)."&dirflg=";
-
         return new WP_REST_Response(
             [
                 'footer' => $sunmi_options['print_data_footer'] ?? 'Enjoy your meal!',
                 'logo' => $logo,
                 'phone' => $options['lieferchef_phone'],
                 'address' => $options['lieferchef_address'] . ', ' . $options['lieferchef_zip'] . ', ' . $options['lieferchef_city'],
+                'vat' => $options['lieferchef_vat'],
+                'company_name' => $options['lieferchef_company'],
             ],
             200
         );

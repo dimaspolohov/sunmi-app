@@ -362,21 +362,30 @@ class Main {
         $orders = array();
 
         foreach ($filtered_orders as $order){
-           if($order instanceof WC_Order) {
-               $status = str_replace('wc-', '', $order->get_status());
-               $orders[$status][] = [
-                   'id' => $order->get_id(),
-                   'customer' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
-                   'items_count' => count($order->get_items()),
-                   'total' => $order->get_total(),
-                   'status' => $order->get_status(),
-                   'payment_method_type' => self::payment_method_type($order),
-                   'delivery_type' => Lieferchef_Table_Order::get_delivery_type($order),
-                   'delivery_time' => get_post_meta( $order->get_id(), 'delivery_time', true ),
-                   'approximate_time' => get_post_meta( $order->get_id(), 'delivery_time', true ),
-                   'created_time' => $order->get_date_created(),
-               ];
-           }
+            if($order instanceof WC_Order) {
+
+                $method = self::payment_method_type($order);
+                $status = str_replace('wc-', '', $order->get_status());
+                $date_created = $order->get_date_created()->date('Y-m-d');
+                $date_delivery = date('Y-m-d', strtotime($order->get_meta('delivery_time')));
+
+                if($date_created != $date_delivery && $status == 'preparing'){
+                    continue;
+                }
+
+                $orders[$status][] = [
+                    'id' => $order->get_id(),
+                    'customer' => $order->get_billing_first_name() . ' ' . $order->get_billing_last_name(),
+                    'items_count' => count($order->get_items()),
+                    'total' => $order->get_total(),
+                    'status' => $status,
+                    'payment_method_type' => $method,
+                    'delivery_type' => Lieferchef_Table_Order::get_delivery_type($order),
+                    'delivery_time' => get_post_meta( $order->get_id(), 'delivery_time', true ),
+                    'approximate_time' => get_post_meta( $order->get_id(), 'delivery_time', true ),
+                    'created_time' => $order->get_date_created(),
+                ];
+            }
         }
 
         return new WP_REST_Response(
