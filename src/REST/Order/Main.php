@@ -369,7 +369,7 @@ class Main {
                 $date_created = $order->get_date_created()->date('Y-m-d');
                 $date_delivery = date('Y-m-d', strtotime($order->get_meta('delivery_time')));
 
-                if($date_created != $date_delivery && $status == 'preparing'){
+                if($date_created != $date_delivery && $date_created == $today && $status == 'preparing'){
                     continue;
                 }
 
@@ -399,21 +399,10 @@ class Main {
     public static function get_order(WC_Order $order, $encode_array = false): array
     {
         $items = [];
-        $tax_items_labels   = array();
-
-        foreach ( $order->get_items('tax') as $tax_item ) {
-            // Set the tax labels by rate ID in an array
-            $tax_items_labels[$tax_item->get_rate_id()] = $tax_item->get_label();
-        }
+        $tax_meta = get_post_meta( $order->get_id(), '_lieferchef_tax_totals', true );
 
         foreach ( $order->get_items() as $item_id => $item ) {
             $total = $item->get_total();
-
-            $taxes = $item->get_taxes();
-            // Loop through taxes array to get the right label
-            foreach( $taxes['subtotal'] as $rate_id => $tax ){
-                $tax_label = $tax_items_labels[$rate_id];
-            }
 
             $items[$item_id] = [
                 'name' => $item->get_name(),
@@ -423,8 +412,7 @@ class Main {
                 'quantity' => $item->get_quantity(),
                 'total' => floatval($total),
                 'total_with_addons' => floatval($total),
-                'tax' => floatval($item->get_subtotal_tax()),
-                'tax_label' => $tax_label,
+                'tax_data' => wc_get_order_item_meta($item->get_id(), '_lieferchef_tax_data', true),
                 'total_with_tax' => round(floatval($total) + floatval($item->get_subtotal_tax()), 2),
                 'addons' => [],
             ];
@@ -449,64 +437,6 @@ class Main {
 
                     $items[$item_id]['total'] = round($total, 2);
                 }
-            }
-        }
-
-        // Calculate totals by tax type (Reduced vs Standard)
-        $tax_data = [];
-        $tax_totals = [
-            'reduced' => [
-                'total_without_tax' => 0,
-                'tax_amount' => 0,
-                'total_with_tax' => 0,
-                'items_count' => 0
-            ],
-            'standard' => [
-                'total_without_tax' => 0,
-                'tax_amount' => 0,
-                'total_with_tax' => 0,
-                'items_count' => 0
-            ]
-        ];
-
-        // Group items by tax type and calculate totals
-        foreach ($order->get_items() as $item_id => $item) {
-            $item_total = $item->get_total();
-            $item_tax = $item->get_subtotal_tax();
-            $item_total_with_tax = $item_total + $item_tax;
-            
-            // Get tax label to determine tax type
-            $taxes = $item->get_taxes();
-            $tax_label = '';
-            foreach($taxes['subtotal'] as $rate_id => $tax) {
-                $tax_label = $tax_items_labels[$rate_id];
-                break; // Get the first tax label
-            }
-            
-            // Determine tax type based on label
-            $tax_type = 'standard'; // Default to standard
-            if (stripos($tax_label, 'reduced') !== false || stripos($tax_label, 'ermäßigt') !== false) {
-                $tax_type = 'reduced';
-            }
-            
-            // Add to appropriate tax type totals
-            $tax_totals[$tax_type]['total_without_tax'] += $item_total;
-            $tax_totals[$tax_type]['tax_amount'] += $item_tax;
-            $tax_totals[$tax_type]['total_with_tax'] += $item_total_with_tax;
-            $tax_totals[$tax_type]['items_count'] += $item->get_quantity();
-        }
-
-        // Format tax data for response
-        foreach ($tax_totals as $type => $totals) {
-            if ($totals['items_count'] > 0) { // Only include tax types that have items
-                $tax_data[] = [
-                    'type' => $type,
-                    'name' => ucfirst($type) . ' Tax',
-                    'total_without_tax' => round($totals['total_without_tax'], 2),
-                    'tax_amount' => round($totals['tax_amount'], 2),
-                    'total_with_tax' => round($totals['total_with_tax'], 2),
-                    'items_count' => $totals['items_count']
-                ];
             }
         }
 
@@ -560,7 +490,7 @@ class Main {
             'discount' => floatval($order->get_total_discount()),
             'shipping' => floatval($order->get_shipping_total()),
             'total' => $order->get_total(),
-            'tax_data' => $tax_data,
+            'tax_data' => $tax_meta,
             'status_times' => $encode_array ? json_encode($status_times) : $status_times,
             'items' => $encode_array ? json_encode($items) : $items,
         ];
